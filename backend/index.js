@@ -25,8 +25,13 @@ app.use(express.urlencoded({ extended: true }));
 async function startServer() {
     try {
         // Connect to database
-        await pool.getConnection();
-        console.log('Database connected successfully');
+        pool.on('connect', () => {
+          console.log('Connected to the database!');
+        });
+        
+        pool.on('error', (err) => {
+          console.error('Database connection error', err.stack);
+        });
 
         // Base route for server health check
         app.get('/', (req, res) => {
