@@ -20,15 +20,15 @@ class Patient {
         emergency_contact 
     }) {
         try {
-            const id = uuidv4().slice(0, 4);
-            const [result] = await db.query(
+            const id = uuidv4();  // Generate UUID for patient
+            const result = await db.query(
                 `INSERT INTO patients (
                     id, 
                     name, 
                     age, 
                     gender, 
                     floor_number, 
-                    room_number,
+                    room_number, 
                     bed_number,
                     diseases,
                     allergies,
@@ -37,7 +37,8 @@ class Patient {
                     emergency_contact,
                     created_at,
                     updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW()) 
+                RETURNING *`,
                 [
                     id,
                     name,
@@ -53,32 +54,18 @@ class Patient {
                     emergency_contact
                 ]
             );
-            
-            return { 
-                id, 
-                name, 
-                age, 
-                gender, 
-                floor_number, 
-                room_number,
-                bed_number,
-                diseases,
-                allergies,
-                medical_history,
-                contact_number,
-                emergency_contact
-            };
+            return result.rows[0];  // Return the inserted row
         } catch (error) {
             throw new Error(`Error creating patient: ${error.message}`);
         }
     }
 
     static async findById(id) {
-        const [patients] = await db.query(
-            'SELECT * FROM patients WHERE id = ?',
+        const result = await db.query(
+            'SELECT * FROM patients WHERE id = $1',
             [id]
         );
-        return patients[0];
+        return result.rows[0];  // Return the found patient
     }
 
     static async update(id, { 
@@ -95,13 +82,16 @@ class Patient {
         emergency_contact 
     }) {
         try {
-            const [result] = await db.query(
+            const result = await db.query(
                 `UPDATE patients 
-                 SET name = ?, age = ?, gender = ?, floor_number = ?, room_number = ?, bed_number = ?, diseases = ?, allergies = ?, medical_history = ?, contact_number = ?, emergency_contact = ?, updated_at = NOW()
-                 WHERE id = ?`,
-                [name, age, gender, floor_number, room_number, bed_number, diseases, allergies, medical_history, contact_number, emergency_contact, id]
+                 SET name = $1, age = $2, gender = $3, floor_number = $4, room_number = $5, bed_number = $6, diseases = $7, allergies = $8, medical_history = $9, contact_number = $10, emergency_contact = $11, updated_at = NOW()
+                 WHERE id = $12
+                 RETURNING *`,  // Return the updated row
+                [
+                    name, age, gender, floor_number, room_number, bed_number, diseases, allergies, medical_history, contact_number, emergency_contact, id
+                ]
             );
-            return result.affectedRows > 0;
+            return result.rows[0];  // Return the updated patient data
         } catch (error) {
             throw new Error(`Error updating patient: ${error.message}`);
         }
@@ -109,16 +99,16 @@ class Patient {
 
     static async delete(id) {
         try {
-            const [result] = await db.query(
-                'DELETE FROM patients WHERE id = ?',
+            const result = await db.query(
+                'DELETE FROM patients WHERE id = $1 RETURNING *',
                 [id]
             );
 
-            if (result.affectedRows === 0) {
+            if (result.rows.length === 0) {
                 throw new Error('Patient not found');
             }
 
-            return true;
+            return true;  // Return true if deleted
         } catch (error) {
             throw new Error(`Error deleting patient: ${error.message}`);
         }
@@ -131,16 +121,16 @@ class Patient {
         // Add dynamic filtering
         if (Object.keys(filters).length > 0) {
             const whereConditions = Object.entries(filters)
-                .map(([key, value]) => {
+                .map(([key, value], index) => {
                     values.push(value);
-                    return `${key.toLowerCase()} = ?`;
+                    return `${key.toLowerCase()} = $${index + 1}`;  // Use dynamic indexing for parameters
                 })
                 .join(' AND ');
             query += ` WHERE ${whereConditions}`;
         }
 
-        const [patients] = await db.query(query, values);
-        return patients;
+        const result = await db.query(query, values);
+        return result.rows;  // Return all patients matching filters
     }
 }
 

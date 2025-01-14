@@ -1,4 +1,4 @@
-const db = require('../config/database');
+const db = require('../config/database'); // Ensure this connects to your PostgreSQL database
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 
@@ -12,17 +12,17 @@ class User {
             // Hash password before storing
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
-            const id = uuidv4().slice(0, 4);
+            const id = uuidv4();  // PostgreSQL UUID
 
-            const [result] = await db.query(
+            const result = await db.query(
                 `INSERT INTO users (id, username, password, email, role)
-                 VALUES (?, ?, ?, ?, ?)`,
+                 VALUES ($1, $2, $3, $4, $5) RETURNING id, username, email, role`,
                 [id, username, hashedPassword, email, role]
             );
 
-            return { id, username, email, role };
+            return result.rows[0];  // Returns the inserted user data
         } catch (error) {
-            if (error.code === 'ER_DUP_ENTRY') {
+            if (error.code === '23505') {  // PostgreSQL duplicate key error code
                 throw new Error('Username or email already exists');
             }
             throw error;
@@ -30,19 +30,19 @@ class User {
     }
 
     static async findById(id) {
-        const [users] = await db.query(
-            'SELECT id, username, email, role FROM users WHERE id = ?',
+        const result = await db.query(
+            'SELECT id, username, email, role FROM users WHERE id = $1',
             [id]
         );
-        return users[0];
+        return result.rows[0];  // Returns the user data
     }
 
     static async findByEmail(email) {
-        const [users] = await db.query(
-            'SELECT * FROM users WHERE email = ?',
+        const result = await db.query(
+            'SELECT * FROM users WHERE email = $1',
             [email]
         );
-        return users[0];
+        return result.rows[0];  // Returns the user data
     }
 
     static async validatePassword(user, password) {

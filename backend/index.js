@@ -5,7 +5,7 @@ dotenv.config();  // Configure environment variables first
 
 const logger = require('./src/utils/logger');
 const config = require('./src/config/config');  
-const pool = require('./src/config/database');
+const db = require('./src/config/database');
 const authRoutes = require('./src/routes/auth.routes');
 const patientRoutes = require('./src/routes/patient.routes');
 const mealsRoutes = require('./src/routes/meals.routes');
@@ -25,11 +25,11 @@ app.use(express.urlencoded({ extended: true }));
 async function startServer() {
     try {
         // Connect to database
-        pool.on('connect', () => {
+        db.on('connect', () => {
           console.log('Connected to the database!');
         });
         
-        pool.on('error', (err) => {
+        db.on('error', (err) => {
           console.error('Database connection error', err.stack);
         });
 

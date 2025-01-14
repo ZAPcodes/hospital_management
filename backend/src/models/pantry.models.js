@@ -13,14 +13,15 @@ class Pantry {
         const id = uuidv4();
 
         try {
-            const [result] = await db.query(
+            const result = await db.query(
                 `INSERT INTO pantry_staff (id, name, contact_info, location)
-                 VALUES (?, ?, ?, ?)`,
+                 VALUES ($1, $2, $3, $4)
+                 RETURNING *`, // Return the inserted staff member
                 [id, name, contactInfo, location]
             );
-            return { id, name, contactInfo, location };
+            return result.rows[0]; // Return the inserted staff member
         } catch (error) {
-            if (error.code === 'ER_DUP_ENTRY') {
+            if (error.code === '23505') { // PostgreSQL unique violation error
                 throw new Error('Staff member with the same contact info already exists.');
             }
             throw new Error(`Error adding pantry staff: ${error.message}`);
@@ -37,19 +38,19 @@ class Pantry {
         if (name || location) {
             query += ' WHERE';
             if (name) {
-                query += ' name LIKE ?';
+                query += ' name LIKE $' + (params.length + 1);  // Use dynamic parameterization
                 params.push(`%${name}%`);
             }
             if (location) {
                 if (params.length > 0) query += ' AND';
-                query += ' location = ?';
+                query += ' location = $' + (params.length + 1);  // Use dynamic parameterization
                 params.push(location);
             }
         }
 
         try {
-            const [staff] = await db.query(query, params);
-            return staff;
+            const result = await db.query(query, params);
+            return result.rows;  // Return all staff members
         } catch (error) {
             throw new Error(`Error fetching pantry staff: ${error.message}`);
         }
@@ -66,19 +67,19 @@ class Pantry {
             throw new Error('No valid fields to update.');
         }
 
-        const updateQuery = updateKeys.map(key => `${key} = ?`).join(', ');
+        const updateQuery = updateKeys.map((key, index) => `${key} = $${index + 1}`).join(', ');
         const params = [...updateKeys.map(key => updates[key]), id];
 
         try {
-            const [result] = await db.query(
-                `UPDATE pantry_staff SET ${updateQuery} WHERE id = ?`,
-                params
+            const result = await db.query(
+                `UPDATE pantry_staff SET ${updateQuery} WHERE id = $${params.length + 1} RETURNING *`,
+                [...params, id]  // Add id at the end for WHERE clause
             );
 
-            if (result.affectedRows === 0) {
+            if (result.rows.length === 0) {
                 throw new Error('Pantry staff not found.');
             }
-            return true;
+            return result.rows[0];  // Return the updated staff member
         } catch (error) {
             throw new Error(`Error updating pantry staff: ${error.message}`);
         }
@@ -89,12 +90,12 @@ class Pantry {
      */
     static async deleteStaff(id) {
         try {
-            const [result] = await db.query('DELETE FROM pantry_staff WHERE id = ?', [id]);
+            const result = await db.query('DELETE FROM pantry_staff WHERE id = $1 RETURNING *', [id]);
 
-            if (result.affectedRows === 0) {
+            if (result.rows.length === 0) {
                 throw new Error('Pantry staff not found.');
             }
-            return true;
+            return true;  // Return true if deleted
         } catch (error) {
             throw new Error(`Error deleting pantry staff: ${error.message}`);
         }
@@ -105,8 +106,8 @@ class Pantry {
      */
     static async findById(id) {
         try {
-            const [staff] = await db.query('SELECT * FROM pantry_staff WHERE id = ?', [id]);
-            return staff[0] || null;
+            const result = await db.query('SELECT * FROM pantry_staff WHERE id = $1', [id]);
+            return result.rows[0] || null;  // Return the staff member or null
         } catch (error) {
             throw new Error(`Error fetching pantry staff by ID: ${error.message}`);
         }
