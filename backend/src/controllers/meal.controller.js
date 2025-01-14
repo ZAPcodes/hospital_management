@@ -1,5 +1,5 @@
 const Meal = require('../models/meals.models');
-const logger = require('../utils/Logger');
+const logger = require('../utils/logger');
 
 class MealController {
     async create(req, res) {

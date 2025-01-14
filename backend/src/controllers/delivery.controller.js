@@ -1,5 +1,5 @@
 const Delivery = require('../models/delivery.models');
-const logger = require('../utils/Logger');
+const logger = require('../utils/logger');
 
 class DeliveryController {
     async createDelivery(req, res) {

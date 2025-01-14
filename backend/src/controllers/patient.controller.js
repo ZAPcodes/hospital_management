@@ -1,5 +1,5 @@
 const Patient = require('../models/patient.models');
-const logger = require('../utils/Logger');
+const logger = require('../utils/logger');
 
 
 class PatientController {

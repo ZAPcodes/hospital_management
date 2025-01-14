@@ -1,5 +1,5 @@
 const Pantry = require('../models/pantry.models');
-const logger = require('../utils/Logger');
+const logger = require('../utils/logger');
 
 class PantryController {
     async addStaff(req, res) {

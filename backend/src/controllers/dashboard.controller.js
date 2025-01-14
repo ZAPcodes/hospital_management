@@ -1,5 +1,5 @@
 const db = require('../config/database');
-const logger = require('../utils/Logger');
+const logger = require('../utils/logger');
 
 class DashboardController {
     async getStats(req, res) {

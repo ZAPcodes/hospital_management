@@ -1,6 +1,6 @@
 const { log } = require('winston');
 const DietChart = require('../models/dietChart.models');
-const logger = require('../utils/Logger');
+const logger = require('../utils/logger');
 const db = require('../config/database');
 
 class DietChartController {
