@@ -58,7 +58,7 @@ export default function PantryStaff() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get('http://localhost:8000/api/pantry/staff', {
+      const response = await axios.get('https://hospital-management-ghc3.onrender.com/api/pantry/staff', {
         params: {
           limit: pagination.limit,
           offset: (pagination.page - 1) * pagination.limit
@@ -95,7 +95,7 @@ export default function PantryStaff() {
     }
 
     try {
-      await axios.delete(`http://localhost:8000/api/pantry/staff/${id}`);
+      await axios.delete(`https://hospital-management-ghc3.onrender.com/api/pantry/staff/${id}`);
       await fetchStaff();
     } catch (error) {
       console.error('Error deleting staff:', error);
@@ -143,9 +143,9 @@ export default function PantryStaff() {
           onSubmit={async (formData) => {
             try {
               if (currentStaff) {
-                await axios.put(`http://localhost:8000/api/pantry/staff/${currentStaff.id}`, formData);
+                await axios.put(`https://hospital-management-ghc3.onrender.com/api/pantry/staff/${currentStaff.id}`, formData);
               } else {
-                await axios.post('http://localhost:8000/api/pantry/staff', formData);
+                await axios.post('https://hospital-management-ghc3.onrender.com/api/pantry/staff', formData);
               }
               await fetchStaff();
               setIsModalOpen(false);

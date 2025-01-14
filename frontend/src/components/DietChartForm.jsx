@@ -18,7 +18,7 @@ const DietChartForm = ({ dietChart, onSubmit, onClose }) => {
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/patients');
+      const response = await axios.get('https://hospital-management-ghc3.onrender.com/api/patients');
       setPatients(response.data);
     } catch (error) {
       setError('Error fetching patients');

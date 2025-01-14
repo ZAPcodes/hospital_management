@@ -59,7 +59,7 @@ export default function Meals() {
       setLoading(true);
       setError(null);
 
-      const response = await axios.get("http://localhost:8000/api/meals", {
+      const response = await axios.get("https://hospital-management-ghc3.onrender.com/api/meals", {
         params: {
           limit: pagination.limit,
           offset: (pagination.page - 1) * pagination.limit
@@ -99,7 +99,7 @@ export default function Meals() {
     }
 
     try {
-      await axios.delete(`http://localhost:8000/api/meals/${id}`);
+      await axios.delete(`https://hospital-management-ghc3.onrender.com/api/meals/${id}`);
       await fetchMeals();
     } catch (error) {
       console.error('Error deleting meal:', error);
@@ -146,9 +146,9 @@ export default function Meals() {
           onSubmit={async (formData) => {
             try {
               if (currentMeal) {
-                await axios.put(`http://localhost:8000/api/meals/${currentMeal.id}`, formData);
+                await axios.put(`https://hospital-management-ghc3.onrender.com/api/meals/${currentMeal.id}`, formData);
               } else {
-                await axios.post('http://localhost:8000/api/meals', formData);
+                await axios.post('https://hospital-management-ghc3.onrender.com/api/meals', formData);
               }
               await fetchMeals();
               setIsModalOpen(false);

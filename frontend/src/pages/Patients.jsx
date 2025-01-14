@@ -73,7 +73,7 @@ export default function Patients() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get('http://localhost:8000/api/patients', {
+      const response = await axios.get('https://hospital-management-ghc3.onrender.com/api/patients', {
         
         // params: {
         //   limit: pagination.limit,
@@ -112,7 +112,7 @@ export default function Patients() {
     }
 
     try {
-      await axios.delete(`http://localhost:8000/api/patients/${id}`);
+      await axios.delete(`https://hospital-management-ghc3.onrender.com/api/patients/${id}`);
       await fetchPatients();
     } catch (error) {
       console.error('Error deleting patient:', error);
@@ -160,9 +160,9 @@ export default function Patients() {
           onSubmit={async (formData) => {
             try {
               if (currentPatient) {
-                await axios.put(`http://localhost:8000/api/patients/${currentPatient.id}`, formData);
+                await axios.put(`https://hospital-management-ghc3.onrender.com/api/patients/${currentPatient.id}`, formData);
               } else {
-                await axios.post('http://localhost:8000/api/patients', formData);
+                await axios.post('https://hospital-management-ghc3.onrender.com/api/patients', formData);
               }
               await fetchPatients();
               setIsModalOpen(false);

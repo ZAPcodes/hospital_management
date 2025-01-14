@@ -57,7 +57,7 @@ export default function DietCharts() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get('http://localhost:8000/api/diet-charts', {
+      const response = await axios.get('https://hospital-management-ghc3.onrender.com/api/diet-charts', {
         params: {
           limit: pagination.limit,
           offset: (pagination.page - 1) * pagination.limit
@@ -94,7 +94,7 @@ export default function DietCharts() {
     }
 
     try {
-      await axios.delete(`http://localhost:8000/api/diet-charts/${id}`);
+      await axios.delete(`https://hospital-management-ghc3.onrender.com/api/diet-charts/${id}`);
       await fetchDietCharts();
     } catch (error) {
       console.error('Error deleting diet chart:', error);
@@ -104,11 +104,11 @@ export default function DietCharts() {
   const handleFormSubmit = async (formData) => {
     try {
       if (currentDietChart) {
-         await axios.put(`http://localhost:8000/api/diet-charts/${currentDietChart.id}`, formData);
+         await axios.put(`https://hospital-management-ghc3.onrender.com/api/diet-charts/${currentDietChart.id}`, formData);
        } else {
       console.log('formData:', formData);
       
-        await axios.post('http://localhost:8000/api/diet-charts', formData);
+        await axios.post('https://hospital-management-ghc3.onrender.com/api/diet-charts', formData);
     }
       await fetchDietCharts();
       setIsModalOpen(false);
@@ -181,7 +181,7 @@ function DietChartForm({ dietChart, onSubmit, onClose }) {
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/patients');
+      const response = await axios.get('https://hospital-management-ghc3.onrender.com/api/patients');
       setPatients(response.data);
     } catch (err) {
       setError('Error loading patients');

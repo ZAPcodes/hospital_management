@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/login', credentials);
+      const response = await axios.post('https://hospital-management-ghc3.onrender.com/api/login', credentials);
       
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);

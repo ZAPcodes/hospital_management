@@ -62,7 +62,7 @@ export default function Deliveries() {
   const fetchDeliveries = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/deliveries`, {
+      const response = await axios.get(`https://hospital-management-ghc3.onrender.com/api/deliveries`, {
         params: {
           limit: pagination.limit,
           offset: (pagination.page - 1) * pagination.limit
@@ -88,7 +88,7 @@ export default function Deliveries() {
 
   const handleStatusUpdate = async (delivery) => {
     try {
-      await axios.patch(`http://localhost:8000/api/deliveries/${delivery.id}/status`, {
+      await axios.patch(`https://hospital-management-ghc3.onrender.com/api/deliveries/${delivery.id}/status`, {
         deliveryStatus: getNextStatus(delivery.delivery_status) 
       });
       await fetchDeliveries();
@@ -140,9 +140,9 @@ export default function Deliveries() {
     delivery={currentDelivery}
     onSubmit={async (formData) => {
       if (currentDelivery) {
-        await axios.put(`http://localhost:8000/api/deliveries/${currentDelivery.id}`, formData);
+        await axios.put(`https://hospital-management-ghc3.onrender.com/api/deliveries/${currentDelivery.id}`, formData);
       } else {
-        await axios.post('http://localhost:8000/api/deliveries', formData);
+        await axios.post('https://hospital-management-ghc3.onrender.com/api/deliveries', formData);
       }
       fetchDeliveries();
       setIsModalOpen(false);
