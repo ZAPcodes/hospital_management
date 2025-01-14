@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 pool.getConnection();
 dotenv.config();
 
-app.listen(config.port, () => {
+app.listen(config.port || 8000, () => {
     logger.info(`Server started on port ${config.port}`);
 });
 
