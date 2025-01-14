@@ -24,69 +24,69 @@ function App() {
           closeOnClick
           pauseOnHover
         />
-        <div className="min-h-screen bg-gray-50">
-          <Navbar />
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <div className="min-h-screen bg-gray-50">
+                  <Navbar />
                   <Layout />
+                </div>
+              </ProtectedRoute>
+            }
+          >
+            <Route 
+              path="dashboard" 
+              element={
+                <ProtectedRoute roles={['admin', 'manager', 'delivery', 'pantry']}>
+                  <Dashboard />
                 </ProtectedRoute>
-              }
-            >
-              <Route 
-                path="dashboard" 
-                element={
-                  <ProtectedRoute roles={['admin', 'manager', 'delivery', 'pantry']}>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="patients" 
-                element={
-                  <ProtectedRoute roles={['admin', 'manager']}>
-                    <Patients />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="diet-charts" 
-                element={
-                  <ProtectedRoute roles={['admin', 'manager', 'pantry']}>
-                    <DietCharts />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="meals" 
-                element={
-                  <ProtectedRoute roles={['admin', 'manager', 'pantry']}>
-                    <Meals />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="deliveries" 
-                element={
-                  <ProtectedRoute roles={['admin', 'delivery']}>
-                    <Deliveries />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="pantry-staff" 
-                element={
-                  <ProtectedRoute roles={['admin', 'pantry']}>
-                    <PantryStaff />
-                  </ProtectedRoute>
-                } 
-              />
-            </Route>
-          </Routes>
-        </div>
+              } 
+            />
+            <Route 
+              path="patients" 
+              element={
+                <ProtectedRoute roles={['admin', 'manager']}>
+                  <Patients />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="diet-charts" 
+              element={
+                <ProtectedRoute roles={['admin', 'manager', 'pantry']}>
+                  <DietCharts />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="meals" 
+              element={
+                <ProtectedRoute roles={['admin', 'manager', 'pantry']}>
+                  <Meals />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="deliveries" 
+              element={
+                <ProtectedRoute roles={['admin', 'delivery']}>
+                  <Deliveries />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="pantry-staff" 
+              element={
+                <ProtectedRoute roles={['admin', 'pantry']}>
+                  <PantryStaff />
+                </ProtectedRoute>
+              } 
+            />
+          </Route>
+        </Routes>
       </AuthProvider>
     </Router>
   );
