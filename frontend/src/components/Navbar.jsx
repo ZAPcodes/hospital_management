@@ -1,10 +1,16 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Home, Users, FileText, Coffee, Truck, Users as Staff } from 'lucide-react';
+import { Home, Users, FileText, Coffee, Truck, Users as Staff, LogOut } from 'lucide-react';
 
 const Navbar = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const role = user.user?.role?.toLowerCase();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const navLinks = [
     {
@@ -53,7 +59,7 @@ const Navbar = () => {
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex space-x-4">
+        <div className="flex space-x-4">
             {navLinks.map((link) => 
               isAuthorized(link.roles) && (
                 <NavLink
@@ -73,10 +79,17 @@ const Navbar = () => {
               )
             )}
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4">
             <span className="text-sm text-gray-700">
               Welcome, {user.user?.username}
             </span>
+            <button
+              onClick={handleLogout}
+              className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors duration-200"
+            >
+              <LogOut className="w-5 h-5 mr-2" />
+              Logout
+            </button>
           </div>
         </div>
       </div>

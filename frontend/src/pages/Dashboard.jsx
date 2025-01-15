@@ -14,7 +14,11 @@ export default function Dashboard() {
     const fetchStats = async () => {
       try {
         const response = await fetch('https://hospital-management-ghc3.onrender.com/api/dashboard/stats');
+        console.log('Response:', response);
+        
         const data = await response.json();
+        console.log('Stats:', data);
+        
         setStats(data);
       } catch (error) {
         console.error('Error fetching stats:', error);

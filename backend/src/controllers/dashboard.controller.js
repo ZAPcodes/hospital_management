@@ -4,31 +4,37 @@ const logger = require('../utils/logger');
 class DashboardController {
     async getStats(req, res) {
         try {
-            const [totalPatients] = await db.query(
+            const totalPatientsResult = await db.query(
                 'SELECT COUNT(*) as count FROM patients'
             );
+            const totalPatients = totalPatientsResult.rows[0].count;
 
-            const [activeDietCharts] = await db.query(
-                'SELECT COUNT(*) as count FROM diet_charts WHERE end_date >= CURDATE()'
+            const activeDietChartsResult = await db.query(
+                'SELECT COUNT(*) as count FROM diet_charts WHERE end_date >= CURRENT_DATE'
             );
+            const activeDietCharts = activeDietChartsResult.rows[0].count;
 
-            const [mealsToday] = await db.query(
-                'SELECT COUNT(*) as count FROM meals WHERE DATE(created_at) = CURDATE()'
+            const mealsTodayResult = await db.query(
+                'SELECT COUNT(*) as count FROM meals WHERE DATE(created_at) = CURRENT_DATE'
             );
+            const mealsToday = mealsTodayResult.rows[0].count;
 
-            const [pendingDeliveries] = await db.query(
-                'SELECT COUNT(*) as count FROM deliveries WHERE delivery_status = "Pending"'
+            const pendingDeliveriesResult = await db.query(
+                'SELECT COUNT(*) as count FROM deliveries WHERE delivery_status = $1',
+                ['Pending']
             );
+            const pendingDeliveries = pendingDeliveriesResult.rows[0].count;
 
+            console.log('Stats:', { totalPatients, activeDietCharts, mealsToday, pendingDeliveries });
             res.status(200).json({
-                totalPatients: totalPatients[0].count,
-                activeDietCharts: activeDietCharts[0].count,
-                mealsToday: mealsToday[0].count,
-                pendingDeliveries: pendingDeliveries[0].count
+                totalPatients,
+                activeDietCharts,
+                mealsToday,
+                pendingDeliveries
             });
         } catch (error) {
             logger.error('Error fetching dashboard stats:', error);
-            res.status(500).json({ message: 'Error fetching dashboard statistics' });
+            res.status(500).json({ message: 'Error fetching dashboard stats' });
         }
     }
 

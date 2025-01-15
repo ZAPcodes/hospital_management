@@ -123,23 +123,27 @@ class DietChartController {
         try {
             const { limit = 10, offset = 0 } = req.query;
             
-            const [dietCharts] = await db.query(
+            const result = await db.query(
                 `SELECT dc.*, p.name as patient_name
                  FROM diet_charts dc
                  LEFT JOIN patients p ON dc.patient_id = p.id
                  ORDER BY dc.created_at DESC
-                 LIMIT ? OFFSET ?`,
+                 LIMIT $1 OFFSET $2`,
                 [parseInt(limit), parseInt(offset)]
             );
 
+            const dietCharts = result.rows;
+
             // Get total count
-            const [total] = await db.query(
+            const totalResult = await db.query(
                 'SELECT COUNT(*) as count FROM diet_charts'
             );
 
+            const total = totalResult.rows[0].count;
+
             res.status(200).json({
                 dietCharts,
-                total: total[0].count,
+                total,
                 limit: parseInt(limit),
                 offset: parseInt(offset)
             });
