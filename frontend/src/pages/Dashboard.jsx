@@ -1,32 +1,38 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Users, ClipboardList, Coffee, Truck } from 'lucide-react';
 
-export default function Dashboard() {
+const Dashboard = () => {
   const [stats, setStats] = useState({
     totalPatients: 0,
     activeDietCharts: 0,
     mealsToday: 0,
     pendingDeliveries: 0,
   });
+  const [recentActivities, setRecentActivities] = useState([]);
 
   useEffect(() => {
-    // Fetch dashboard stats
-    const fetchStats = async () => {
-      try {
-        const response = await fetch('https://hospital-management-ghc3.onrender.com/api/dashboard/stats');
-        console.log('Response:', response);
-        
-        const data = await response.json();
-        console.log('Stats:', data);
-        
-        setStats(data);
-      } catch (error) {
-        console.error('Error fetching stats:', error);
-      }
-    };
-
     fetchStats();
+    fetchRecentActivities();
   }, []);
+
+  const fetchStats = async () => {
+    try {
+      const response = await axios.get('https://hospital-management-ghc3.onrender.com/api/dashboard/stats');
+      setStats(response.data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const fetchRecentActivities = async () => {
+    try {
+      const response = await axios.get('https://hospital-management-ghc3.onrender.com/api/dashboard/recent-activities');
+      setRecentActivities(response.data);
+    } catch (error) {
+      console.error('Error fetching recent activities:', error);
+    }
+  };
 
   const cards = [
     {
@@ -94,12 +100,59 @@ export default function Dashboard() {
           </h3>
           <div className="mt-6 flow-root">
             <ul className="-mb-8">
-              {/* Add your activity items here */}
+              {recentActivities.map((activity, index) => (
+                <li key={index}>
+                  <div className="relative pb-8">
+                    {index !== recentActivities.length - 1 && (
+                      <span
+                        className="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <div className="relative flex items-start space-x-3">
+                      <div className="relative">
+                        <span
+                          className="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center ring-8 ring-white"
+                        >
+                          <svg
+                            className="h-5 w-5 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3a1 1 0 001 1h2a1 1 0 100-2h-1V7z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div>
+                          <div className="text-sm">
+                            <a href="#" className="font-medium text-gray-900">
+                              {activity.user}
+                            </a>
+                          </div>
+                          <p className="mt-0.5 text-sm text-gray-500">
+                            {activity.action}
+                          </p>
+                        </div>
+                        <div className="mt-2 text-sm text-gray-700">
+                          <p>{activity.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
+export default Dashboard;
