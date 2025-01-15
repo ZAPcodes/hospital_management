@@ -25,7 +25,6 @@ class DashboardController {
             );
             const pendingDeliveries = pendingDeliveriesResult.rows[0].count;
 
-            console.log('Stats:', { totalPatients, activeDietCharts, mealsToday, pendingDeliveries });
             res.status(200).json({
                 totalPatients,
                 activeDietCharts,
@@ -40,14 +39,14 @@ class DashboardController {
 
     async getRecentActivities(req, res) {
         try {
-            const [activities] = await db.query(`
+            const result = await db.query(`
                 SELECT 
                     'diet_chart' as type,
                     id,
                     created_at,
                     patient_id
                 FROM diet_charts
-                WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                WHERE created_at >= NOW() - INTERVAL '7 days'
                 UNION ALL
                 SELECT 
                     'delivery' as type,
@@ -55,10 +54,12 @@ class DashboardController {
                     timestamp as created_at,
                     patient_id
                 FROM deliveries
-                WHERE timestamp >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                WHERE timestamp >= NOW() - INTERVAL '7 days'
                 ORDER BY created_at DESC
                 LIMIT 10
             `);
+
+            const activities = result.rows;
 
             res.status(200).json(activities);
         } catch (error) {
